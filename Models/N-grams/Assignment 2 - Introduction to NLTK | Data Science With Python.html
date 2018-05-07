@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="description" content="Analyzing Moby Dick with the NLTK.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assignment 2 - Introduction to NLTK | Data Science With Python</title>
+<link href="Assignment%202%20-%20Introduction%20to%20NLTK%20|%20Data%20Science%20With%20Python_pliki/all-nocdn.css" rel="stylesheet" type="text/css">
+<link href="Assignment%202%20-%20Introduction%20to%20NLTK%20|%20Data%20Science%20With%20Python_pliki/ipython.css" rel="stylesheet" type="text/css">
+<link href="Assignment%202%20-%20Introduction%20to%20NLTK%20|%20Data%20Science%20With%20Python_pliki/nikola_ipython.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="https://necromuralist.github.io/data_science/rss.xml">
+<link rel="canonical" href="https://necromuralist.github.io/data_science/posts/assignment-2-introduction-to-nltk/">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><script type="text/javascript" src="Assignment%202%20-%20Introduction%20to%20NLTK%20|%20Data%20Science%20With%20Python_pliki/MathJax.js">
+</script><meta name="author" content="hades">
+<link rel="prev" href="https://necromuralist.github.io/data_science/posts/extracting-dates-from-medical-data/" title="Extracting Dates From Medical Data" type="text/html">
+<link rel="next" href="https://necromuralist.github.io/data_science/posts/triadic-closure/" title="Triadic Closure (Clustering)" type="text/html">
+<meta property="og:site_name" content="Data Science With Python">
+<meta property="og:title" content="Assignment 2 - Introduction to NLTK">
+<meta property="og:url" content="https://necromuralist.github.io/data_science/posts/assignment-2-introduction-to-nltk/">
+<meta property="og:description" content="Analyzing Moby Dick with the NLTK.">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2017-08-12T15:02:00-07:00">
+<meta property="article:tag" content="text nltk nlp">
+<style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 5px 0px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; -khtml-border-radius: 5px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 1px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: .7em}
+.MathJax_MenuRadioCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuLabel {padding: 1px 2em 3px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #DDDDDD; margin: 4px 3px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: #606872; color: white}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1px; bottom: 2px; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style><style type="text/css">.mjx-chtml {display: inline-block; line-height: 0; text-indent: 0; text-align: left; text-transform: none; font-style: normal; font-weight: normal; font-size: 100%; font-size-adjust: none; letter-spacing: normal; word-wrap: normal; word-spacing: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0; min-height: 0; border: 0; margin: 0; padding: 1px 0}
+.MJXc-display {display: block; text-align: center; margin: 1em 0; padding: 0}
+.mjx-chtml[tabindex]:focus, body :focus .mjx-chtml[tabindex] {display: inline-table}
+.mjx-full-width {text-align: center; display: table-cell!important; width: 10000em}
+.mjx-math {display: inline-block; border-collapse: separate; border-spacing: 0}
+.mjx-math * {display: inline-block; -webkit-box-sizing: content-box!important; -moz-box-sizing: content-box!important; box-sizing: content-box!important; text-align: left}
+.mjx-numerator {display: block; text-align: center}
+.mjx-denominator {display: block; text-align: center}
+.MJXc-stacked {height: 0; position: relative}
+.MJXc-stacked > * {position: absolute}
+.MJXc-bevelled > * {display: inline-block}
+.mjx-stack {display: inline-block}
+.mjx-op {display: block}
+.mjx-under {display: table-cell}
+.mjx-over {display: block}
+.mjx-over > * {padding-left: 0px!important; padding-right: 0px!important}
+.mjx-under > * {padding-left: 0px!important; padding-right: 0px!important}
+.mjx-stack > .mjx-sup {display: block}
+.mjx-stack > .mjx-sub {display: block}
+.mjx-prestack > .mjx-presup {display: block}
+.mjx-prestack > .mjx-presub {display: block}
+.mjx-delim-h > .mjx-char {display: inline-block}
+.mjx-surd {vertical-align: top}
+.mjx-mphantom * {visibility: hidden}
+.mjx-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 2px 3px; font-style: normal; font-size: 90%}
+.mjx-annotation-xml {line-height: normal}
+.mjx-menclose > svg {fill: none; stroke: currentColor}
+.mjx-mtr {display: table-row}
+.mjx-mlabeledtr {display: table-row}
+.mjx-mtd {display: table-cell; text-align: center}
+.mjx-label {display: table-row}
+.mjx-box {display: inline-block}
+.mjx-block {display: block}
+.mjx-span {display: inline}
+.mjx-char {display: block; white-space: pre}
+.mjx-itable {display: inline-table; width: auto}
+.mjx-row {display: table-row}
+.mjx-cell {display: table-cell}
+.mjx-table {display: table; width: 100%}
+.mjx-line {display: block; height: 0}
+.mjx-strut {width: 0; padding-top: 1em}
+.mjx-vsize {width: 0}
+.MJXc-space1 {margin-left: .167em}
+.MJXc-space2 {margin-left: .222em}
+.MJXc-space3 {margin-left: .278em}
+.mjx-chartest {display: block; visibility: hidden; position: absolute; top: 0; line-height: normal; font-size: 500%}
+.mjx-chartest .mjx-char {display: inline}
+.mjx-chartest .mjx-box {padding-top: 1000px}
+.MJXc-processing {visibility: hidden; position: fixed; width: 0; height: 0; overflow: hidden}
+.MJXc-processed {display: none}
+.mjx-test {display: block; font-style: normal; font-weight: normal; font-size: 100%; font-size-adjust: none; text-indent: 0; text-transform: none; letter-spacing: normal; word-spacing: normal; overflow: hidden; height: 1px}
+.mjx-ex-box-test {position: absolute; overflow: hidden; width: 1px; height: 60ex}
+.mjx-line-box-test {display: table!important}
+.mjx-line-box-test span {display: table-cell!important; width: 10000em!important; min-width: 0; max-width: none; padding: 0; border: 0; margin: 0}
+#MathJax_CHTML_Tooltip {background-color: InfoBackground; color: InfoText; border: 1px solid black; box-shadow: 2px 2px 5px #AAAAAA; -webkit-box-shadow: 2px 2px 5px #AAAAAA; -moz-box-shadow: 2px 2px 5px #AAAAAA; -khtml-box-shadow: 2px 2px 5px #AAAAAA; padding: 3px 4px; z-index: 401; position: absolute; left: 0; top: 0; width: auto; height: auto; display: none}
+.mjx-chtml .mjx-noError {line-height: 1.2; vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+.MJXc-TeX-unknown-R {font-family: STIXGeneral,'Cambria Math','Arial Unicode MS',serif; font-style: normal; font-weight: normal}
+.MJXc-TeX-unknown-I {font-family: STIXGeneral,'Cambria Math','Arial Unicode MS',serif; font-style: italic; font-weight: normal}
+.MJXc-TeX-unknown-B {font-family: STIXGeneral,'Cambria Math','Arial Unicode MS',serif; font-style: normal; font-weight: bold}
+.MJXc-TeX-unknown-BI {font-family: STIXGeneral,'Cambria Math','Arial Unicode MS',serif; font-style: italic; font-weight: bold}
+.MJXc-TeX-ams-R {font-family: MJXc-TeX-ams-R,MJXc-TeX-ams-Rw}
+.MJXc-TeX-cal-B {font-family: MJXc-TeX-cal-B,MJXc-TeX-cal-Bx,MJXc-TeX-cal-Bw}
+.MJXc-TeX-frak-R {font-family: MJXc-TeX-frak-R,MJXc-TeX-frak-Rw}
+.MJXc-TeX-frak-B {font-family: MJXc-TeX-frak-B,MJXc-TeX-frak-Bx,MJXc-TeX-frak-Bw}
+.MJXc-TeX-math-BI {font-family: MJXc-TeX-math-BI,MJXc-TeX-math-BIx,MJXc-TeX-math-BIw}
+.MJXc-TeX-sans-R {font-family: MJXc-TeX-sans-R,MJXc-TeX-sans-Rw}
+.MJXc-TeX-sans-B {font-family: MJXc-TeX-sans-B,MJXc-TeX-sans-Bx,MJXc-TeX-sans-Bw}
+.MJXc-TeX-sans-I {font-family: MJXc-TeX-sans-I,MJXc-TeX-sans-Ix,MJXc-TeX-sans-Iw}
+.MJXc-TeX-script-R {font-family: MJXc-TeX-script-R,MJXc-TeX-script-Rw}
+.MJXc-TeX-type-R {font-family: MJXc-TeX-type-R,MJXc-TeX-type-Rw}
+.MJXc-TeX-cal-R {font-family: MJXc-TeX-cal-R,MJXc-TeX-cal-Rw}
+.MJXc-TeX-main-B {font-family: MJXc-TeX-main-B,MJXc-TeX-main-Bx,MJXc-TeX-main-Bw}
+.MJXc-TeX-main-I {font-family: MJXc-TeX-main-I,MJXc-TeX-main-Ix,MJXc-TeX-main-Iw}
+.MJXc-TeX-main-R {font-family: MJXc-TeX-main-R,MJXc-TeX-main-Rw}
+.MJXc-TeX-math-I {font-family: MJXc-TeX-math-I,MJXc-TeX-math-Ix,MJXc-TeX-math-Iw}
+.MJXc-TeX-size1-R {font-family: MJXc-TeX-size1-R,MJXc-TeX-size1-Rw}
+.MJXc-TeX-size2-R {font-family: MJXc-TeX-size2-R,MJXc-TeX-size2-Rw}
+.MJXc-TeX-size3-R {font-family: MJXc-TeX-size3-R,MJXc-TeX-size3-Rw}
+.MJXc-TeX-size4-R {font-family: MJXc-TeX-size4-R,MJXc-TeX-size4-Rw}
+.MJXc-TeX-vec-R {font-family: MJXc-TeX-vec-R,MJXc-TeX-vec-Rw}
+.MJXc-TeX-vec-B {font-family: MJXc-TeX-vec-B,MJXc-TeX-vec-Bx,MJXc-TeX-vec-Bw}
+@font-face {font-family: MJXc-TeX-ams-R; src: local('MathJax_AMS'), local('MathJax_AMS-Regular')}
+@font-face {font-family: MJXc-TeX-ams-Rw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_AMS-Regular.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_AMS-Regular.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_AMS-Regular.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-cal-B; src: local('MathJax_Caligraphic Bold'), local('MathJax_Caligraphic-Bold')}
+@font-face {font-family: MJXc-TeX-cal-Bx; src: local('MathJax_Caligraphic'); font-weight: bold}
+@font-face {font-family: MJXc-TeX-cal-Bw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_Caligraphic-Bold.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_Caligraphic-Bold.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_Caligraphic-Bold.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-frak-R; src: local('MathJax_Fraktur'), local('MathJax_Fraktur-Regular')}
+@font-face {font-family: MJXc-TeX-frak-Rw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_Fraktur-Regular.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_Fraktur-Regular.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_Fraktur-Regular.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-frak-B; src: local('MathJax_Fraktur Bold'), local('MathJax_Fraktur-Bold')}
+@font-face {font-family: MJXc-TeX-frak-Bx; src: local('MathJax_Fraktur'); font-weight: bold}
+@font-face {font-family: MJXc-TeX-frak-Bw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_Fraktur-Bold.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_Fraktur-Bold.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_Fraktur-Bold.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-math-BI; src: local('MathJax_Math BoldItalic'), local('MathJax_Math-BoldItalic')}
+@font-face {font-family: MJXc-TeX-math-BIx; src: local('MathJax_Math'); font-weight: bold; font-style: italic}
+@font-face {font-family: MJXc-TeX-math-BIw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_Math-BoldItalic.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_Math-BoldItalic.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_Math-BoldItalic.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-sans-R; src: local('MathJax_SansSerif'), local('MathJax_SansSerif-Regular')}
+@font-face {font-family: MJXc-TeX-sans-Rw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_SansSerif-Regular.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_SansSerif-Regular.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_SansSerif-Regular.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-sans-B; src: local('MathJax_SansSerif Bold'), local('MathJax_SansSerif-Bold')}
+@font-face {font-family: MJXc-TeX-sans-Bx; src: local('MathJax_SansSerif'); font-weight: bold}
+@font-face {font-family: MJXc-TeX-sans-Bw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_SansSerif-Bold.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_SansSerif-Bold.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_SansSerif-Bold.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-sans-I; src: local('MathJax_SansSerif Italic'), local('MathJax_SansSerif-Italic')}
+@font-face {font-family: MJXc-TeX-sans-Ix; src: local('MathJax_SansSerif'); font-style: italic}
+@font-face {font-family: MJXc-TeX-sans-Iw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_SansSerif-Italic.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_SansSerif-Italic.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_SansSerif-Italic.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-script-R; src: local('MathJax_Script'), local('MathJax_Script-Regular')}
+@font-face {font-family: MJXc-TeX-script-Rw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_Script-Regular.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_Script-Regular.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_Script-Regular.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-type-R; src: local('MathJax_Typewriter'), local('MathJax_Typewriter-Regular')}
+@font-face {font-family: MJXc-TeX-type-Rw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_Typewriter-Regular.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_Typewriter-Regular.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_Typewriter-Regular.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-cal-R; src: local('MathJax_Caligraphic'), local('MathJax_Caligraphic-Regular')}
+@font-face {font-family: MJXc-TeX-cal-Rw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_Caligraphic-Regular.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_Caligraphic-Regular.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_Caligraphic-Regular.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-main-B; src: local('MathJax_Main Bold'), local('MathJax_Main-Bold')}
+@font-face {font-family: MJXc-TeX-main-Bx; src: local('MathJax_Main'); font-weight: bold}
+@font-face {font-family: MJXc-TeX-main-Bw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_Main-Bold.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_Main-Bold.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_Main-Bold.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-main-I; src: local('MathJax_Main Italic'), local('MathJax_Main-Italic')}
+@font-face {font-family: MJXc-TeX-main-Ix; src: local('MathJax_Main'); font-style: italic}
+@font-face {font-family: MJXc-TeX-main-Iw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_Main-Italic.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_Main-Italic.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_Main-Italic.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-main-R; src: local('MathJax_Main'), local('MathJax_Main-Regular')}
+@font-face {font-family: MJXc-TeX-main-Rw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_Main-Regular.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_Main-Regular.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_Main-Regular.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-math-I; src: local('MathJax_Math Italic'), local('MathJax_Math-Italic')}
+@font-face {font-family: MJXc-TeX-math-Ix; src: local('MathJax_Math'); font-style: italic}
+@font-face {font-family: MJXc-TeX-math-Iw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_Math-Italic.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_Math-Italic.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_Math-Italic.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-size1-R; src: local('MathJax_Size1'), local('MathJax_Size1-Regular')}
+@font-face {font-family: MJXc-TeX-size1-Rw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_Size1-Regular.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_Size1-Regular.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_Size1-Regular.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-size2-R; src: local('MathJax_Size2'), local('MathJax_Size2-Regular')}
+@font-face {font-family: MJXc-TeX-size2-Rw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_Size2-Regular.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_Size2-Regular.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_Size2-Regular.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-size3-R; src: local('MathJax_Size3'), local('MathJax_Size3-Regular')}
+@font-face {font-family: MJXc-TeX-size3-Rw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_Size3-Regular.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_Size3-Regular.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_Size3-Regular.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-size4-R; src: local('MathJax_Size4'), local('MathJax_Size4-Regular')}
+@font-face {font-family: MJXc-TeX-size4-Rw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_Size4-Regular.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_Size4-Regular.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_Size4-Regular.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-vec-R; src: local('MathJax_Vector'), local('MathJax_Vector-Regular')}
+@font-face {font-family: MJXc-TeX-vec-Rw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_Vector-Regular.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_Vector-Regular.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_Vector-Regular.otf') format('opentype')}
+@font-face {font-family: MJXc-TeX-vec-B; src: local('MathJax_Vector Bold'), local('MathJax_Vector-Bold')}
+@font-face {font-family: MJXc-TeX-vec-Bx; src: local('MathJax_Vector'); font-weight: bold}
+@font-face {font-family: MJXc-TeX-vec-Bw; src /*1*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/eot/MathJax_Vector-Bold.eot'); src /*2*/: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/woff/MathJax_Vector-Bold.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/fonts/HTML-CSS/TeX/otf/MathJax_Vector-Bold.otf') format('opentype')}
+</style></head>
+<body><div id="MathJax_Message" style="display: none;"></div>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-default navbar-static-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://necromuralist.github.io/data_science/">
+
+                <span id="blog-title">Data Science With Python</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li class="dropdown">
+<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Projects <b class="caret"></b></a>
+            <ul class="dropdown-menu"><li>
+<a href="https://necromuralist.github.io/data_science/pages/portland-unemployment-2007-to-2017">Portland Unemployment Visualization</a>
+            </li></ul>
+</li>
+<li>
+<a href="https://necromuralist.github.io/data_science/archive.html">Archive</a>
+                </li>
+<li>
+<a href="https://necromuralist.github.io/data_science/categories/">Tags</a>
+                </li>
+<li>
+<a href="https://necromuralist.github.io/data_science/rss.xml">RSS feed</a>
+
+                
+            </li>
+</ul>
+<!-- Google custom search --><form method="get" action="https://www.google.com/search" class="navbar-form
+ navbar-right" role="search">
+<div class="form-group">
+<input name="q" class="form-control" placeholder="Search" type="text">
+</div>
+<button type="submit" class="btn btn-primary">
+<span class="glyphicon glyphicon-search"></span>
+</button>
+<input name="sitesearch" value="https://necromuralist.github.io/data_science/" type="hidden">
+</form>
+<!-- End of custom search -->
+
+
+            <ul class="nav navbar-nav navbar-right">
+<li>
+    <a href="https://necromuralist.github.io/data_science/posts/assignment-2-introduction-to-nltk/index.rst" id="sourcelink">Source</a>
+    </li>
+
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        <div class="row">
+            
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="https://necromuralist.github.io/data_science/posts/assignment-2-introduction-to-nltk/" class="u-url">Assignment 2 - Introduction to NLTK</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                    <a href="https://necromuralist.github.io/data_science/authors/hades/">hades</a>
+            </span></p>
+            <p class="dateline"><a href="https://necromuralist.github.io/data_science/posts/assignment-2-introduction-to-nltk/" rel="bookmark"><time class="published dt-published" datetime="2017-08-12T15:02:00-07:00" itemprop="datePublished" title="2017-08-12 15:02">2017-08-12 15:02</time></a></p>
+            
+        <p class="sourceline"><a href="https://necromuralist.github.io/data_science/posts/assignment-2-introduction-to-nltk/index.rst" class="sourcelink">Source</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>In part 1 of this assignment you will use nltk to explore the Herman 
+Melville novel Moby Dick. Then in part 2 you will create a spelling 
+recommender function that uses nltk to find words similar to the 
+misspelling.</p>
+<div class="section" id="part-1-analyzing-moby-dick">
+<h2>1 Part 1 - Analyzing Moby Dick</h2>
+<div class="section" id="imports-and-data-set-up">
+<h3>1.1 Imports and Data Set Up</h3>
+<pre class="code ipython"><a name="rest_code_89894ef1e8e44db99e6a71abc511fb2e-1"></a><span class="kn">from</span> <span class="nn">nltk.probability</span> <span class="kn">import</span> <span class="n">FreqDist</span>
+<a name="rest_code_89894ef1e8e44db99e6a71abc511fb2e-2"></a><span class="kn">from</span> <span class="nn">nltk.stem</span> <span class="kn">import</span> <span class="n">WordNetLemmatizer</span>
+<a name="rest_code_89894ef1e8e44db99e6a71abc511fb2e-3"></a><span class="kn">from</span> <span class="nn">nltk.tokenize</span> <span class="kn">import</span> <span class="n">sent_tokenize</span>
+<a name="rest_code_89894ef1e8e44db99e6a71abc511fb2e-4"></a><span class="kn">import</span> <span class="nn">matplotlib</span>
+<a name="rest_code_89894ef1e8e44db99e6a71abc511fb2e-5"></a><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">pyplot</span>
+<a name="rest_code_89894ef1e8e44db99e6a71abc511fb2e-6"></a><span class="kn">import</span> <span class="nn">nltk</span>
+<a name="rest_code_89894ef1e8e44db99e6a71abc511fb2e-7"></a><span class="kn">import</span> <span class="nn">nltk.data</span>
+<a name="rest_code_89894ef1e8e44db99e6a71abc511fb2e-8"></a><span class="kn">import</span> <span class="nn">numba</span>
+<a name="rest_code_89894ef1e8e44db99e6a71abc511fb2e-9"></a><span class="kn">import</span> <span class="nn">numpy</span>
+<a name="rest_code_89894ef1e8e44db99e6a71abc511fb2e-10"></a><span class="kn">import</span> <span class="nn">pandas</span>
+<a name="rest_code_89894ef1e8e44db99e6a71abc511fb2e-11"></a><span class="kn">import</span> <span class="nn">seaborn</span>
+</pre>
+<pre class="code ipython"><a name="rest_code_b7f4c0b43f974b02bdfb80251635251c-1"></a><span class="o">%</span><span class="k">matplotlib</span> inline
+<a name="rest_code_b7f4c0b43f974b02bdfb80251635251c-2"></a><span class="n">seaborn</span><span class="o">.</span><span class="n">set_style</span><span class="p">(</span><span class="s2">"whitegrid"</span><span class="p">)</span>
+</pre>
+<p>If you would like to work with the raw text you can use 'moby_raw'.</p>
+<pre class="code ipython"><a name="rest_code_fc1bf0d0ba65473ab7bc1ddd4f303c5f-1"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'moby.txt'</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">reader</span><span class="p">:</span>
+<a name="rest_code_fc1bf0d0ba65473ab7bc1ddd4f303c5f-2"></a>    <span class="n">moby_raw</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre>
+<p>If you would like to work with the novel in <tt class="docutils literal">nltk.Text</tt> format you can use 'text1'.</p>
+<pre class="code ipython"><a name="rest_code_8a7c6d96525247de8a5789ac4c21beb1-1"></a><span class="n">moby_tokens</span> <span class="o">=</span> <span class="n">nltk</span><span class="o">.</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">moby_raw</span><span class="p">)</span>
+<a name="rest_code_8a7c6d96525247de8a5789ac4c21beb1-2"></a><span class="n">text</span> <span class="o">=</span> <span class="n">nltk</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="n">moby_tokens</span><span class="p">)</span>
+<a name="rest_code_8a7c6d96525247de8a5789ac4c21beb1-3"></a><span class="n">moby_series</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">moby_tokens</span><span class="p">)</span>
+</pre>
+</div>
+<div class="section" id="examples">
+<h3>1.2 Examples</h3>
+<div class="section" id="example-1">
+<h4>1.2.1 Example 1</h4>
+<p><em>How many tokens (words and punctuation symbols) are in text1?</em> A <strong>token</strong> is a linguistic unit such as a word, punctuation mark, or alpha-numeric strings.</p>
+<p><strong>This function should return an integer.</strong></p>
+<pre class="code ipython"><a name="rest_code_6aaee2f640b244a68694abafc51f151b-1"></a><span class="k">def</span> <span class="nf">example_one</span><span class="p">():</span>
+<a name="rest_code_6aaee2f640b244a68694abafc51f151b-2"></a>     <span class="sd">"""counts the tokens in moby dick</span>
+<a name="rest_code_6aaee2f640b244a68694abafc51f151b-3"></a>
+<a name="rest_code_6aaee2f640b244a68694abafc51f151b-4"></a><span class="sd">     Returns:</span>
+<a name="rest_code_6aaee2f640b244a68694abafc51f151b-5"></a><span class="sd">      int: number of tokens in moby dick</span>
+<a name="rest_code_6aaee2f640b244a68694abafc51f151b-6"></a><span class="sd">     """</span>
+<a name="rest_code_6aaee2f640b244a68694abafc51f151b-7"></a>     <span class="c1"># or alternatively len(text1)</span>
+<a name="rest_code_6aaee2f640b244a68694abafc51f151b-8"></a>     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">moby_tokens</span><span class="p">)</span>
+<a name="rest_code_6aaee2f640b244a68694abafc51f151b-9"></a>
+<a name="rest_code_6aaee2f640b244a68694abafc51f151b-10"></a><span class="n">MOBY_TOKEN_COUNT</span> <span class="o">=</span> <span class="n">example_one</span><span class="p">()</span>
+<a name="rest_code_6aaee2f640b244a68694abafc51f151b-11"></a><span class="k">print</span><span class="p">(</span><span class="s2">"Moby Dick has {:,} tokens."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+<a name="rest_code_6aaee2f640b244a68694abafc51f151b-12"></a>     <span class="n">MOBY_TOKEN_COUNT</span><span class="p">))</span>
+</pre>
+<pre class="literal-block">Moby Dick has 254,989 tokens.
+</pre>
+</div>
+<div class="section" id="example-2">
+<h4>1.2.2 Example 2</h4>
+<p><em>How many unique tokens (unique words and punctuation) does text1 have?</em></p>
+<p><strong>This function should return an integer.</strong></p>
+<pre class="code ipython"><a name="rest_code_24b4a0bd376b42e5abad36771a569ae8-1"></a><span class="k">def</span> <span class="nf">example_two</span><span class="p">():</span>
+<a name="rest_code_24b4a0bd376b42e5abad36771a569ae8-2"></a>    <span class="sd">"""counts the unique tokens</span>
+<a name="rest_code_24b4a0bd376b42e5abad36771a569ae8-3"></a>
+<a name="rest_code_24b4a0bd376b42e5abad36771a569ae8-4"></a><span class="sd">    Returns:</span>
+<a name="rest_code_24b4a0bd376b42e5abad36771a569ae8-5"></a><span class="sd">     int: count of unique tokens in Moby Dick</span>
+<a name="rest_code_24b4a0bd376b42e5abad36771a569ae8-6"></a><span class="sd">    """</span>
+<a name="rest_code_24b4a0bd376b42e5abad36771a569ae8-7"></a>    <span class="c1"># or alternatively len(set(text1))</span>
+<a name="rest_code_24b4a0bd376b42e5abad36771a569ae8-8"></a>    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">nltk</span><span class="o">.</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">moby_raw</span><span class="p">)))</span>
+<a name="rest_code_24b4a0bd376b42e5abad36771a569ae8-9"></a>
+<a name="rest_code_24b4a0bd376b42e5abad36771a569ae8-10"></a><span class="n">MOBY_UNIQUE_COUNT</span> <span class="o">=</span> <span class="n">example_two</span><span class="p">()</span>
+<a name="rest_code_24b4a0bd376b42e5abad36771a569ae8-11"></a><span class="k">print</span><span class="p">(</span><span class="s2">"Moby Dick has {:,} unique tokens."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+<a name="rest_code_24b4a0bd376b42e5abad36771a569ae8-12"></a>    <span class="n">MOBY_UNIQUE_COUNT</span><span class="p">))</span>
+</pre>
+<pre class="literal-block">Moby Dick has 20,755 unique tokens.
+</pre>
+</div>
+<div class="section" id="example-3">
+<h4>1.2.3 Example 3</h4>
+<p><em>After lemmatizing the verbs, how many unique tokens does text1 have?</em> A <strong>lemma</strong> is the canonical form. e.g. <em>run</em> is the lemma for <em>runs</em>, <em>ran</em>, <em>running</em>, and <em>run</em>.</p>
+<p><strong>This function should return an integer.</strong></p>
+<pre class="code ipython"><a name="rest_code_2e99db9b8c9e40a0b04eccbe8730bae7-1"></a><span class="k">def</span> <span class="nf">example_three</span><span class="p">():</span>
+<a name="rest_code_2e99db9b8c9e40a0b04eccbe8730bae7-2"></a>    <span class="sd">"""Counts the number of lemma in Moby Dick</span>
+<a name="rest_code_2e99db9b8c9e40a0b04eccbe8730bae7-3"></a>
+<a name="rest_code_2e99db9b8c9e40a0b04eccbe8730bae7-4"></a><span class="sd">    Returns:</span>
+<a name="rest_code_2e99db9b8c9e40a0b04eccbe8730bae7-5"></a><span class="sd">     int: count of unique lemma</span>
+<a name="rest_code_2e99db9b8c9e40a0b04eccbe8730bae7-6"></a><span class="sd">    """</span>
+<a name="rest_code_2e99db9b8c9e40a0b04eccbe8730bae7-7"></a>    <span class="n">lemmatizer</span> <span class="o">=</span> <span class="n">WordNetLemmatizer</span><span class="p">()</span>
+<a name="rest_code_2e99db9b8c9e40a0b04eccbe8730bae7-8"></a>    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">lemmatizer</span><span class="o">.</span><span class="n">lemmatize</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="s1">'v'</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">text1</span><span class="p">]))</span>
+<a name="rest_code_2e99db9b8c9e40a0b04eccbe8730bae7-9"></a>
+<a name="rest_code_2e99db9b8c9e40a0b04eccbe8730bae7-10"></a><span class="n">MOBY_LEMMA_COUNT</span> <span class="o">=</span> <span class="n">example_three</span><span class="p">()</span>
+<a name="rest_code_2e99db9b8c9e40a0b04eccbe8730bae7-11"></a><span class="k">print</span><span class="p">(</span><span class="s2">"Moby Dick has {:,} lemma (found in WordNet)."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+<a name="rest_code_2e99db9b8c9e40a0b04eccbe8730bae7-12"></a>    <span class="n">MOBY_LEMMA_COUNT</span><span class="p">))</span>
+</pre>
+<pre class="literal-block">Moby Dick has 16,900 lemma (found in WordNet).
+</pre>
+</div>
+</div>
+<div class="section" id="questions">
+<h3>1.3 Questions</h3>
+<div class="section" id="question-1">
+<h4>1.3.1 Question 1</h4>
+<p>What is the lexical diversity of the given text input? (i.e. ratio of unique tokens to the total number of tokens)</p>
+<p><strong>This function should return a float.</strong></p>
+<pre class="code ipython"><a name="rest_code_953cde7382604334989394a6f6e16c30-1"></a><span class="nd">@jit</span>
+<a name="rest_code_953cde7382604334989394a6f6e16c30-2"></a><span class="k">def</span> <span class="nf">lexical_diversity</span><span class="p">(</span><span class="n">tokens</span><span class="p">):</span>
+<a name="rest_code_953cde7382604334989394a6f6e16c30-3"></a>    <span class="sd">"""Calculates the lexical diversity of a list of tokens</span>
+<a name="rest_code_953cde7382604334989394a6f6e16c30-4"></a>
+<a name="rest_code_953cde7382604334989394a6f6e16c30-5"></a><span class="sd">    Returns:</span>
+<a name="rest_code_953cde7382604334989394a6f6e16c30-6"></a><span class="sd">     float: fraction of tokens that are unique</span>
+<a name="rest_code_953cde7382604334989394a6f6e16c30-7"></a><span class="sd">    """</span>
+<a name="rest_code_953cde7382604334989394a6f6e16c30-8"></a>    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">tokens</span><span class="p">))</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">))</span>
+</pre>
+<pre class="code ipython"><a name="rest_code_ab92a780f9d84c159f79f1e2f1f88280-1"></a><span class="k">def</span> <span class="nf">answer_one</span><span class="p">():</span>
+<a name="rest_code_ab92a780f9d84c159f79f1e2f1f88280-2"></a>    <span class="sd">"""Calculates the lexical diversity of Moby Dick</span>
+<a name="rest_code_ab92a780f9d84c159f79f1e2f1f88280-3"></a>
+<a name="rest_code_ab92a780f9d84c159f79f1e2f1f88280-4"></a><span class="sd">    Returns:</span>
+<a name="rest_code_ab92a780f9d84c159f79f1e2f1f88280-5"></a><span class="sd">     float: fraction of tokens that are unique</span>
+<a name="rest_code_ab92a780f9d84c159f79f1e2f1f88280-6"></a><span class="sd">    """</span>
+<a name="rest_code_ab92a780f9d84c159f79f1e2f1f88280-7"></a>    <span class="k">return</span> <span class="n">lexical_diversity</span><span class="p">(</span><span class="n">moby_tokens</span><span class="p">)</span>
+<a name="rest_code_ab92a780f9d84c159f79f1e2f1f88280-8"></a>
+<a name="rest_code_ab92a780f9d84c159f79f1e2f1f88280-9"></a><span class="n">output</span> <span class="o">=</span> <span class="n">answer_one</span><span class="p">()</span>
+<a name="rest_code_ab92a780f9d84c159f79f1e2f1f88280-10"></a><span class="k">print</span><span class="p">(</span><span class="s2">"Lexical Diversity of Moby Dick: {:.2f}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output</span><span class="p">))</span>
+</pre>
+<pre class="literal-block">Lexical Diversity of Moby Dick: 0.08
+</pre>
+<p>About 8 percent of the tokens in Moby Dick are unique.</p>
+</div>
+<div class="section" id="question-2">
+<h4>1.3.2 Question 2</h4>
+<p><em>What percentage of tokens is 'whale'or 'Whale'?</em></p>
+<p><strong>This function should return a float.</strong></p>
+<pre class="code ipython"><a name="rest_code_e61e89938fd14f8198d33a2144ecd3b0-1"></a><span class="n">moby_frequencies</span> <span class="o">=</span> <span class="n">FreqDist</span><span class="p">(</span><span class="n">moby_tokens</span><span class="p">)</span>
+</pre>
+<pre class="code ipython"><a name="rest_code_91e336210b6b4631be5378580c2dd24e-1"></a><span class="k">def</span> <span class="nf">answer_two</span><span class="p">():</span>
+<a name="rest_code_91e336210b6b4631be5378580c2dd24e-2"></a>    <span class="sd">"""calculates percentage of tokens that are 'whale'</span>
+<a name="rest_code_91e336210b6b4631be5378580c2dd24e-3"></a>
+<a name="rest_code_91e336210b6b4631be5378580c2dd24e-4"></a><span class="sd">    Returns:</span>
+<a name="rest_code_91e336210b6b4631be5378580c2dd24e-5"></a><span class="sd">     float: percentage of entries that are whales</span>
+<a name="rest_code_91e336210b6b4631be5378580c2dd24e-6"></a><span class="sd">    """</span>
+<a name="rest_code_91e336210b6b4631be5378580c2dd24e-7"></a>    <span class="n">whales</span> <span class="o">=</span> <span class="n">moby_frequencies</span><span class="p">[</span><span class="s2">"whale"</span><span class="p">]</span> <span class="o">+</span> <span class="n">moby_frequencies</span><span class="p">[</span><span class="s2">"Whale"</span><span class="p">]</span>
+<a name="rest_code_91e336210b6b4631be5378580c2dd24e-8"></a>    <span class="k">return</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="n">whales</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">MOBY_TOKEN_COUNT</span><span class="p">))</span>
+<a name="rest_code_91e336210b6b4631be5378580c2dd24e-9"></a>
+<a name="rest_code_91e336210b6b4631be5378580c2dd24e-10"></a><span class="n">whale_fraction</span> <span class="o">=</span> <span class="n">answer_two</span><span class="p">()</span>
+<a name="rest_code_91e336210b6b4631be5378580c2dd24e-11"></a><span class="k">print</span><span class="p">(</span><span class="s2">"Percentage of tokens that are whales: {:.2f} %"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">whale_fraction</span><span class="p">))</span>
+</pre>
+<pre class="literal-block">Percentage of tokens that are whales: 0.41 %
+</pre>
+<p>Around 1 percent of the tokens are 'whale'.</p>
+<p>I originally made two mistakes with this question, I was returning a 
+fraction, not a percentage, and I was using a regular expression <em>'([Ww]hale)'</em> which I later realized would match <em>whales</em>, <em>whaler</em>, and other variants.</p>
+<pre class="literal-block">782
+</pre>
+</div>
+<div class="section" id="question-3">
+<h4>1.3.3 Question 3</h4>
+<p><em>What are the 20 most frequently occurring (unique) tokens in the text? What is their frequency?</em></p>
+<p><strong>This function should return a list of 20 tuples where each tuple is of the form <span class="MathJax_Preview" style="color: inherit; display: none;"></span><span id="MathJax-Element-1-Frame" class="mjx-chtml MathJax_CHTML" tabindex="0" style="font-size: 101%; position: relative;" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mstyle displaystyle=&quot;true&quot;&gt;&lt;mrow&gt;&lt;mo&gt;(&lt;/mo&gt;&lt;mo&gt;&amp;#x2192;&lt;/mo&gt;&lt;mi&gt;k&lt;/mi&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;mi&gt;n&lt;/mi&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mstyle mathvariant=&quot;fraktur&quot;&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;/mstyle&gt;&lt;mi&gt;q&lt;/mi&gt;&lt;mi&gt;u&lt;/mi&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;mi&gt;n&lt;/mi&gt;&lt;mi&gt;c&lt;/mi&gt;&lt;mi&gt;y&lt;/mi&gt;&lt;mo&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;/mstyle&gt;&lt;/math&gt;" role="presentation"><span id="MJXc-Node-1" class="mjx-math" aria-hidden="true"><span id="MJXc-Node-2" class="mjx-mrow"><span id="MJXc-Node-3" class="mjx-mstyle"><span id="MJXc-Node-4" class="mjx-mrow"><span id="MJXc-Node-5" class="mjx-mrow"><span id="MJXc-Node-6" class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.448em; padding-bottom: 0.597em;">(</span></span><span id="MJXc-Node-7" class="mjx-mo" style="padding-left: 0.333em; padding-right: 0.333em;"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.2em; padding-bottom: 0.349em;">→</span></span><span id="MJXc-Node-8" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.448em; padding-bottom: 0.3em;">k</span></span><span id="MJXc-Node-9" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">e</span></span><span id="MJXc-Node-10" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">n</span></span><span id="MJXc-Node-11" class="mjx-mo" style="padding-right: 0.222em;"><span class="mjx-char MJXc-TeX-main-R" style="margin-top: -0.146em; padding-bottom: 0.547em;">,</span></span><span id="MJXc-Node-12" class="mjx-mstyle"><span id="MJXc-Node-13" class="mjx-mrow"><span id="MJXc-Node-14" class="mjx-mi"><span class="mjx-char MJXc-TeX-frak-R" style="padding-top: 0.25em; padding-bottom: 0.3em;">e</span></span></span></span><span id="MJXc-Node-15" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.448em; padding-right: 0.014em;">q</span></span><span id="MJXc-Node-16" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">u</span></span><span id="MJXc-Node-17" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">e</span></span><span id="MJXc-Node-18" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">n</span></span><span id="MJXc-Node-19" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">c</span></span><span id="MJXc-Node-20" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.498em; padding-right: 0.006em;">y</span></span><span id="MJXc-Node-21" class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.448em; padding-bottom: 0.597em;">)</span></span></span></span></span></span></span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mstyle displaystyle="true"><mrow><mo>(</mo><mo>→</mo><mi>k</mi><mi>e</mi><mi>n</mi><mo>,</mo><mstyle mathvariant="fraktur"><mi>e</mi></mstyle><mi>q</mi><mi>u</mi><mi>e</mi><mi>n</mi><mi>c</mi><mi>y</mi><mo>)</mo></mrow></mstyle></math></span></span><script type="math/asciimath" id="MathJax-Element-1">(token, frequency)</script>. The list should be sorted in descending order of frequency.</strong></p>
+<pre class="code ipython"><a name="rest_code_8df9215976e04d879757587fccbb2313-1"></a><span class="k">def</span> <span class="nf">answer_three</span><span class="p">():</span>
+<a name="rest_code_8df9215976e04d879757587fccbb2313-2"></a>    <span class="sd">"""finds 20 most requently occuring tokens</span>
+<a name="rest_code_8df9215976e04d879757587fccbb2313-3"></a>
+<a name="rest_code_8df9215976e04d879757587fccbb2313-4"></a><span class="sd">    Returns:</span>
+<a name="rest_code_8df9215976e04d879757587fccbb2313-5"></a><span class="sd">     list: (token, frequency) for top 20 tokens</span>
+<a name="rest_code_8df9215976e04d879757587fccbb2313-6"></a><span class="sd">    """</span>
+<a name="rest_code_8df9215976e04d879757587fccbb2313-7"></a>    <span class="k">return</span> <span class="n">moby_frequencies</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+<a name="rest_code_8df9215976e04d879757587fccbb2313-8"></a>
+<a name="rest_code_8df9215976e04d879757587fccbb2313-9"></a><span class="k">print</span><span class="p">(</span><span class="n">answer_three</span><span class="p">())</span>
+</pre>
+<pre class="literal-block">[(',', 19204), ('the', 13715), ('.', 7308), ('of', 6513), ('and', 6010), ('a', 4545), ('to', 4515), (';', 4173), ('in', 3908), ('that', 2978), ('his', 2459), ('it', 2196), ('I', 2097), ('!', 1767), ('is', 1722), ('--', 1713), ('with', 1659), ('he', 1658), ('was', 1639), ('as', 1620)]
+</pre>
+</div>
+<div class="section" id="question-4">
+<h4>1.3.4 Question 4</h4>
+<p><em>What tokens have a length of greater than 5 and frequency of more than 150?</em></p>
+<p><strong>This function should return a sorted list of the tokens that match the above constraints. To sort your list, use <span class="MathJax_Preview" style="color: inherit; display: none;"></span><span id="MathJax-Element-2-Frame" class="mjx-chtml MathJax_CHTML" tabindex="0" style="font-size: 101%; position: relative;" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mstyle displaystyle=&quot;true&quot;&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;mrow&gt;&lt;mspace width=&quot;1ex&quot; /&gt;&lt;mtext&gt;or&lt;/mtext&gt;&lt;mspace width=&quot;1ex&quot; /&gt;&lt;/mrow&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;mi&gt;d&lt;/mi&gt;&lt;mrow&gt;&lt;mo&gt;(&lt;/mo&gt;&lt;mo&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;/mstyle&gt;&lt;/math&gt;" role="presentation"><span id="MJXc-Node-22" class="mjx-math" aria-hidden="true"><span id="MJXc-Node-23" class="mjx-mrow"><span id="MJXc-Node-24" class="mjx-mstyle"><span id="MJXc-Node-25" class="mjx-mrow"><span id="MJXc-Node-26" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">s</span></span><span id="MJXc-Node-27" class="mjx-mrow"><span id="MJXc-Node-28" class="mjx-mspace" style="width: 0.442em; height: 0px;"></span><span id="MJXc-Node-29" class="mjx-mtext"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.151em; padding-bottom: 0.349em;">or</span></span><span id="MJXc-Node-30" class="mjx-mspace" style="width: 0.442em; height: 0px;"></span></span><span id="MJXc-Node-31" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.399em; padding-bottom: 0.3em;">t</span></span><span id="MJXc-Node-32" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">e</span></span><span id="MJXc-Node-33" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.448em; padding-bottom: 0.3em; padding-right: 0.003em;">d</span></span><span id="MJXc-Node-34" class="mjx-mrow"><span id="MJXc-Node-35" class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.448em; padding-bottom: 0.597em;">(</span></span><span id="MJXc-Node-36" class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.448em; padding-bottom: 0.597em;">)</span></span></span></span></span></span></span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mstyle displaystyle="true"><mi>s</mi><mrow><mspace width="1ex"></mspace><mtext>or</mtext><mspace width="1ex"></mspace></mrow><mi>t</mi><mi>e</mi><mi>d</mi><mrow><mo>(</mo><mo>)</mo></mrow></mstyle></math></span></span><script type="math/asciimath" id="MathJax-Element-2">sorted()</script></strong></p>
+<pre class="code ipython"><a name="rest_code_98a78f817e9c414fa18cc8d2a116db65-1"></a><span class="n">moby_frequency_frame</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">moby_frequencies</span><span class="o">.</span><span class="n">most_common</span><span class="p">(),</span>
+<a name="rest_code_98a78f817e9c414fa18cc8d2a116db65-2"></a>                                        <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"token"</span><span class="p">,</span> <span class="s2">"frequency"</span><span class="p">])</span>
+</pre>
+<pre class="code ipython"><a name="rest_code_338a2db467c341a2bc74d8e2ae540352-1"></a><span class="k">def</span> <span class="nf">answer_four</span><span class="p">():</span>
+<a name="rest_code_338a2db467c341a2bc74d8e2ae540352-2"></a>    <span class="sd">"""gets tokens with length &gt; 5, frequency &gt; 150"""</span>
+<a name="rest_code_338a2db467c341a2bc74d8e2ae540352-3"></a>    <span class="n">frame</span> <span class="o">=</span>  <span class="n">moby_frequency_frame</span><span class="p">[(</span><span class="n">moby_frequency_frame</span><span class="o">.</span><span class="n">frequency</span> <span class="o">&gt;</span> <span class="mi">150</span><span class="p">)</span>
+<a name="rest_code_338a2db467c341a2bc74d8e2ae540352-4"></a>                                  <span class="o">&amp;</span> <span class="p">(</span><span class="n">moby_frequency_frame</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">)]</span>
+<a name="rest_code_338a2db467c341a2bc74d8e2ae540352-5"></a>    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">token</span><span class="p">)</span>
+<a name="rest_code_338a2db467c341a2bc74d8e2ae540352-6"></a>
+<a name="rest_code_338a2db467c341a2bc74d8e2ae540352-7"></a><span class="n">output</span> <span class="o">=</span> <span class="n">answer_four</span><span class="p">()</span>
+<a name="rest_code_338a2db467c341a2bc74d8e2ae540352-8"></a><span class="k">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</pre>
+<pre class="literal-block">['Captain', 'Pequod', 'Queequeg', 'Starbuck', 'almost', 'before', 'himself', 'little', 'seemed', 'should', 'though', 'through', 'whales', 'without']
+</pre>
+<p>I was originally returning the data frame, not just the sorted tokens, which was of course marked wrong.</p>
+</div>
+<div class="section" id="question-5">
+<h4>1.3.5 Question 5</h4>
+<p><em>Find the longest word in text1 and that word's length.</em></p>
+<p><strong>This function should return a tuple <span class="MathJax_Preview" style="color: inherit; display: none;"></span><span id="MathJax-Element-3-Frame" class="mjx-chtml MathJax_CHTML" tabindex="0" style="font-size: 101%; position: relative;" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mstyle displaystyle=&quot;true&quot;&gt;&lt;mrow&gt;&lt;mo&gt;(&lt;/mo&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;n&lt;/mi&gt;&lt;mo&gt;&amp;#x2265;&lt;/mo&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mi&gt;w&lt;/mi&gt;&lt;/msub&gt;&lt;mrow&gt;&lt;mspace width=&quot;1ex&quot; /&gt;&lt;mtext&gt;or&lt;/mtext&gt;&lt;mspace width=&quot;1ex&quot; /&gt;&lt;/mrow&gt;&lt;mi&gt;d&lt;/mi&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mo&gt;&amp;#x2264;&lt;/mo&gt;&lt;mi&gt;n&lt;/mi&gt;&lt;mo&gt;&amp;gt;&lt;/mo&gt;&lt;mi&gt;h&lt;/mi&gt;&lt;mo&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;/mstyle&gt;&lt;/math&gt;" role="presentation"><span id="MJXc-Node-37" class="mjx-math" aria-hidden="true"><span id="MJXc-Node-38" class="mjx-mrow"><span id="MJXc-Node-39" class="mjx-mstyle"><span id="MJXc-Node-40" class="mjx-mrow"><span id="MJXc-Node-41" class="mjx-mrow"><span id="MJXc-Node-42" class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.448em; padding-bottom: 0.597em;">(</span></span><span id="MJXc-Node-43" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.448em; padding-bottom: 0.3em;">l</span></span><span id="MJXc-Node-44" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">o</span></span><span id="MJXc-Node-45" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">n</span></span><span id="MJXc-Node-46" class="mjx-mo" style="padding-left: 0.333em; padding-right: 0.333em;"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.349em; padding-bottom: 0.498em;">≥</span></span><span id="MJXc-Node-47" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">s</span></span><span id="MJXc-Node-48" class="mjx-msub"><span class="mjx-base"><span id="MJXc-Node-49" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.399em; padding-bottom: 0.3em;">t</span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span id="MJXc-Node-50" class="mjx-mi" style=""><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">w</span></span></span></span><span id="MJXc-Node-51" class="mjx-mrow"><span id="MJXc-Node-52" class="mjx-mspace" style="width: 0.442em; height: 0px;"></span><span id="MJXc-Node-53" class="mjx-mtext"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.151em; padding-bottom: 0.349em;">or</span></span><span id="MJXc-Node-54" class="mjx-mspace" style="width: 0.442em; height: 0px;"></span></span><span id="MJXc-Node-55" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.448em; padding-bottom: 0.3em; padding-right: 0.003em;">d</span></span><span id="MJXc-Node-56" class="mjx-mo" style="padding-right: 0.222em;"><span class="mjx-char MJXc-TeX-main-R" style="margin-top: -0.146em; padding-bottom: 0.547em;">,</span></span><span id="MJXc-Node-57" class="mjx-mo" style="padding-left: 0.333em; padding-right: 0.333em;"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.349em; padding-bottom: 0.498em;">≤</span></span><span id="MJXc-Node-58" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">n</span></span><span id="MJXc-Node-59" class="mjx-mo" style="padding-left: 0.333em; padding-right: 0.333em;"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.25em; padding-bottom: 0.399em;">&gt;</span></span><span id="MJXc-Node-60" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.448em; padding-bottom: 0.3em;">h</span></span><span id="MJXc-Node-61" class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.448em; padding-bottom: 0.597em;">)</span></span></span></span></span></span></span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mstyle displaystyle="true"><mrow><mo>(</mo><mi>l</mi><mi>o</mi><mi>n</mi><mo>≥</mo><mi>s</mi><msub><mi>t</mi><mi>w</mi></msub><mrow><mspace width="1ex"></mspace><mtext>or</mtext><mspace width="1ex"></mspace></mrow><mi>d</mi><mo>,</mo><mo>≤</mo><mi>n</mi><mo>&gt;</mo><mi>h</mi><mo>)</mo></mrow></mstyle></math></span></span><script type="math/asciimath" id="MathJax-Element-3">(longest_word, length)</script>.</strong></p>
+<pre class="code ipython"><a name="rest_code_d017350420344667a85421aa61dbbafd-1"></a><span class="k">def</span> <span class="nf">answer_five</span><span class="p">():</span>
+<a name="rest_code_d017350420344667a85421aa61dbbafd-2"></a>    <span class="sd">"""finds the longest word and its length</span>
+<a name="rest_code_d017350420344667a85421aa61dbbafd-3"></a>
+<a name="rest_code_d017350420344667a85421aa61dbbafd-4"></a><span class="sd">    Return:</span>
+<a name="rest_code_d017350420344667a85421aa61dbbafd-5"></a><span class="sd">     tuple: (longest-word, length)</span>
+<a name="rest_code_d017350420344667a85421aa61dbbafd-6"></a><span class="sd">    """</span>
+<a name="rest_code_d017350420344667a85421aa61dbbafd-7"></a>    <span class="n">length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">moby_frequency_frame</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">())</span>
+<a name="rest_code_d017350420344667a85421aa61dbbafd-8"></a>    <span class="n">longest</span> <span class="o">=</span> <span class="n">moby_frequency_frame</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s2">"(?P&lt;long&gt;.{{{}}})"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">length</span><span class="p">))</span>
+<a name="rest_code_d017350420344667a85421aa61dbbafd-9"></a>    <span class="k">return</span> <span class="p">(</span><span class="n">longest</span><span class="o">.</span><span class="n">long</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">length</span><span class="p">)</span>
+<a name="rest_code_d017350420344667a85421aa61dbbafd-10"></a>
+<a name="rest_code_d017350420344667a85421aa61dbbafd-11"></a><span class="k">print</span><span class="p">(</span><span class="n">answer_five</span><span class="p">())</span>
+</pre>
+<pre class="literal-block">("twelve-o'clock-at-night", 23)
+</pre>
+</div>
+<div class="section" id="question-6">
+<h4>1.3.6 Question 6</h4>
+<p><em>What unique words have a frequency of more than 2000? What is their frequency?</em></p>
+<p>Hint:  you may want to use <span class="MathJax_Preview" style="color: inherit; display: none;"></span><span id="MathJax-Element-4-Frame" class="mjx-chtml MathJax_CHTML" tabindex="0" style="font-size: 101%; position: relative;" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mstyle displaystyle=&quot;true&quot;&gt;&lt;mi&gt;i&lt;/mi&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;mi&gt;&amp;#x3B1;&lt;/mi&gt;&lt;mrow&gt;&lt;mo&gt;(&lt;/mo&gt;&lt;mo&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;/mstyle&gt;&lt;/math&gt;" role="presentation"><span id="MJXc-Node-62" class="mjx-math" aria-hidden="true"><span id="MJXc-Node-63" class="mjx-mrow"><span id="MJXc-Node-64" class="mjx-mstyle"><span id="MJXc-Node-65" class="mjx-mrow"><span id="MJXc-Node-66" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.448em; padding-bottom: 0.3em;">i</span></span><span id="MJXc-Node-67" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">s</span></span><span id="MJXc-Node-68" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">α</span></span><span id="MJXc-Node-69" class="mjx-mrow"><span id="MJXc-Node-70" class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.448em; padding-bottom: 0.597em;">(</span></span><span id="MJXc-Node-71" class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.448em; padding-bottom: 0.597em;">)</span></span></span></span></span></span></span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mstyle displaystyle="true"><mi>i</mi><mi>s</mi><mi>α</mi><mrow><mo>(</mo><mo>)</mo></mrow></mstyle></math></span></span><script type="math/asciimath" id="MathJax-Element-4">isalpha()</script> to check if the token is a word and not punctuation.</p>
+<p><strong>This function should return a list of tuples of the form <span class="MathJax_Preview" style="color: inherit; display: none;"></span><span id="MathJax-Element-5-Frame" class="mjx-chtml MathJax_CHTML" tabindex="0" style="font-size: 101%; position: relative;" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mstyle displaystyle=&quot;true&quot;&gt;&lt;mrow&gt;&lt;mo&gt;(&lt;/mo&gt;&lt;mstyle mathvariant=&quot;fraktur&quot;&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;/mstyle&gt;&lt;mi&gt;q&lt;/mi&gt;&lt;mi&gt;u&lt;/mi&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;mi&gt;n&lt;/mi&gt;&lt;mi&gt;c&lt;/mi&gt;&lt;mi&gt;y&lt;/mi&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mi&gt;w&lt;/mi&gt;&lt;mrow&gt;&lt;mspace width=&quot;1ex&quot; /&gt;&lt;mtext&gt;or&lt;/mtext&gt;&lt;mspace width=&quot;1ex&quot; /&gt;&lt;/mrow&gt;&lt;mi&gt;d&lt;/mi&gt;&lt;mo&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;/mstyle&gt;&lt;/math&gt;" role="presentation"><span id="MJXc-Node-72" class="mjx-math" aria-hidden="true"><span id="MJXc-Node-73" class="mjx-mrow"><span id="MJXc-Node-74" class="mjx-mstyle"><span id="MJXc-Node-75" class="mjx-mrow"><span id="MJXc-Node-76" class="mjx-mrow"><span id="MJXc-Node-77" class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.448em; padding-bottom: 0.597em;">(</span></span><span id="MJXc-Node-78" class="mjx-mstyle"><span id="MJXc-Node-79" class="mjx-mrow"><span id="MJXc-Node-80" class="mjx-mi"><span class="mjx-char MJXc-TeX-frak-R" style="padding-top: 0.25em; padding-bottom: 0.3em;">e</span></span></span></span><span id="MJXc-Node-81" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.448em; padding-right: 0.014em;">q</span></span><span id="MJXc-Node-82" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">u</span></span><span id="MJXc-Node-83" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">e</span></span><span id="MJXc-Node-84" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">n</span></span><span id="MJXc-Node-85" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">c</span></span><span id="MJXc-Node-86" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.498em; padding-right: 0.006em;">y</span></span><span id="MJXc-Node-87" class="mjx-mo" style="padding-right: 0.222em;"><span class="mjx-char MJXc-TeX-main-R" style="margin-top: -0.146em; padding-bottom: 0.547em;">,</span></span><span id="MJXc-Node-88" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">w</span></span><span id="MJXc-Node-89" class="mjx-mrow"><span id="MJXc-Node-90" class="mjx-mspace" style="width: 0.442em; height: 0px;"></span><span id="MJXc-Node-91" class="mjx-mtext"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.151em; padding-bottom: 0.349em;">or</span></span><span id="MJXc-Node-92" class="mjx-mspace" style="width: 0.442em; height: 0px;"></span></span><span id="MJXc-Node-93" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.448em; padding-bottom: 0.3em; padding-right: 0.003em;">d</span></span><span id="MJXc-Node-94" class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.448em; padding-bottom: 0.597em;">)</span></span></span></span></span></span></span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mstyle displaystyle="true"><mrow><mo>(</mo><mstyle mathvariant="fraktur"><mi>e</mi></mstyle><mi>q</mi><mi>u</mi><mi>e</mi><mi>n</mi><mi>c</mi><mi>y</mi><mo>,</mo><mi>w</mi><mrow><mspace width="1ex"></mspace><mtext>or</mtext><mspace width="1ex"></mspace></mrow><mi>d</mi><mo>)</mo></mrow></mstyle></math></span></span><script type="math/asciimath" id="MathJax-Element-5">(frequency, word)</script> sorted in descending order of frequency.</strong></p>
+<pre class="code ipython"><a name="rest_code_38a29af671314fada3d66cc440160e84-1"></a><span class="n">moby_words</span> <span class="o">=</span> <span class="n">moby_frequency_frame</span><span class="p">[</span><span class="n">moby_frequency_frame</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()]</span>
+</pre>
+<pre class="code ipython"><a name="rest_code_8444bc1b9d87461ea7fdf9ec0104a996-1"></a><span class="k">def</span> <span class="nf">answer_six</span><span class="p">():</span>
+<a name="rest_code_8444bc1b9d87461ea7fdf9ec0104a996-2"></a>    <span class="sd">"""Finds words wih frequency &gt; 2000</span>
+<a name="rest_code_8444bc1b9d87461ea7fdf9ec0104a996-3"></a>
+<a name="rest_code_8444bc1b9d87461ea7fdf9ec0104a996-4"></a><span class="sd">    Returns:</span>
+<a name="rest_code_8444bc1b9d87461ea7fdf9ec0104a996-5"></a><span class="sd">     list: frequency, word tuples</span>
+<a name="rest_code_8444bc1b9d87461ea7fdf9ec0104a996-6"></a><span class="sd">    """</span>
+<a name="rest_code_8444bc1b9d87461ea7fdf9ec0104a996-7"></a>    <span class="n">common</span> <span class="o">=</span> <span class="n">moby_words</span><span class="p">[</span><span class="n">moby_words</span><span class="o">.</span><span class="n">frequency</span> <span class="o">&gt;</span> <span class="mi">2000</span><span class="p">]</span>
+<a name="rest_code_8444bc1b9d87461ea7fdf9ec0104a996-8"></a>    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">frequency</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">token</span><span class="p">))</span>
+<a name="rest_code_8444bc1b9d87461ea7fdf9ec0104a996-9"></a>
+<a name="rest_code_8444bc1b9d87461ea7fdf9ec0104a996-10"></a><span class="k">print</span><span class="p">(</span><span class="n">answer_six</span><span class="p">())</span>
+</pre>
+<pre class="literal-block">[(13715, 'the'), (6513, 'of'), (6010, 'and'), (4545, 'a'), (4515, 'to'), (3908, 'in'), (2978, 'that'), (2459, 'his'), (2196, 'it'), (2097, 'I')]
+</pre>
+<p>When I first submitted this I got it wrong because I was returning a list of <tt class="docutils literal">(word, frequency)</tt>, not <tt class="docutils literal">(frequency, word)</tt>.</p>
+</div>
+<div class="section" id="question-7">
+<h4>1.3.7 Question 7</h4>
+<p><em>What is the average number of tokens per sentence?</em></p>
+<p><strong>This function should return a float.</strong></p>
+<pre class="code ipython"><a name="rest_code_bea4ac4d7e2f4938a821b71c842c58f4-1"></a><span class="k">def</span> <span class="nf">answer_seven</span><span class="p">():</span>
+<a name="rest_code_bea4ac4d7e2f4938a821b71c842c58f4-2"></a>    <span class="sd">"""average number of tokens per sentence"""</span>
+<a name="rest_code_bea4ac4d7e2f4938a821b71c842c58f4-3"></a>    <span class="n">sentences</span> <span class="o">=</span> <span class="n">sent_tokenize</span><span class="p">(</span><span class="n">moby_raw</span><span class="p">)</span>
+<a name="rest_code_bea4ac4d7e2f4938a821b71c842c58f4-4"></a>    <span class="n">counts</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nltk</span><span class="o">.</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">sentence</span><span class="p">))</span> <span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">sentences</span><span class="p">)</span>
+<a name="rest_code_bea4ac4d7e2f4938a821b71c842c58f4-5"></a>    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sentences</span><span class="p">))</span>
+<a name="rest_code_bea4ac4d7e2f4938a821b71c842c58f4-6"></a>
+<a name="rest_code_bea4ac4d7e2f4938a821b71c842c58f4-7"></a><span class="n">output</span> <span class="o">=</span> <span class="n">answer_seven</span><span class="p">()</span>
+<a name="rest_code_bea4ac4d7e2f4938a821b71c842c58f4-8"></a><span class="k">print</span><span class="p">(</span><span class="s2">"Average number of tokens per sentence: {:.2f}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output</span><span class="p">))</span>
+</pre>
+<pre class="literal-block">Average number of tokens per sentence: 25.88
+</pre>
+</div>
+<div class="section" id="question-8">
+<h4>1.3.8 Question 8</h4>
+<p><em>What are the 5 most frequent parts of speech in this text? What is their frequency?</em> Parts of Speech (POS) are the lexical categories that words belong to.</p>
+<p><strong>This function should return a list of tuples of the form <span class="MathJax_Preview" style="color: inherit; display: none;"></span><span id="MathJax-Element-6-Frame" class="mjx-chtml MathJax_CHTML" tabindex="0" style="font-size: 101%; position: relative;" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mstyle displaystyle=&quot;true&quot;&gt;&lt;mrow&gt;&lt;mo&gt;(&lt;/mo&gt;&lt;mi&gt;p&lt;/mi&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;mi&gt;r&lt;/mi&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;/msub&gt;&lt;mrow&gt;&lt;msub&gt;&lt;mi&gt;f&lt;/mi&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;/msub&gt;&lt;mi&gt;p&lt;/mi&gt;&lt;/mrow&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;mi&gt;c&lt;/mi&gt;&lt;mi&gt;h&lt;/mi&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mstyle mathvariant=&quot;fraktur&quot;&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;/mstyle&gt;&lt;mi&gt;q&lt;/mi&gt;&lt;mi&gt;u&lt;/mi&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;mi&gt;n&lt;/mi&gt;&lt;mi&gt;c&lt;/mi&gt;&lt;mi&gt;y&lt;/mi&gt;&lt;mo&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;/mstyle&gt;&lt;/math&gt;" role="presentation"><span id="MJXc-Node-95" class="mjx-math" aria-hidden="true"><span id="MJXc-Node-96" class="mjx-mrow"><span id="MJXc-Node-97" class="mjx-mstyle"><span id="MJXc-Node-98" class="mjx-mrow"><span id="MJXc-Node-99" class="mjx-mrow"><span id="MJXc-Node-100" class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.448em; padding-bottom: 0.597em;">(</span></span><span id="MJXc-Node-101" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.448em;">p</span></span><span id="MJXc-Node-102" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">a</span></span><span id="MJXc-Node-103" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">r</span></span><span id="MJXc-Node-104" class="mjx-msub"><span class="mjx-base"><span id="MJXc-Node-105" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.399em; padding-bottom: 0.3em;">t</span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span id="MJXc-Node-106" class="mjx-mi" style=""><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">o</span></span></span></span><span id="MJXc-Node-107" class="mjx-mrow"><span id="MJXc-Node-108" class="mjx-msub"><span class="mjx-base" style="margin-right: -0.06em;"><span id="MJXc-Node-109" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.498em; padding-bottom: 0.498em; padding-right: 0.06em;">f</span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span id="MJXc-Node-110" class="mjx-mi" style=""><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">s</span></span></span></span><span id="MJXc-Node-111" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.448em;">p</span></span></span><span id="MJXc-Node-112" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">e</span></span><span id="MJXc-Node-113" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">e</span></span><span id="MJXc-Node-114" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">c</span></span><span id="MJXc-Node-115" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.448em; padding-bottom: 0.3em;">h</span></span><span id="MJXc-Node-116" class="mjx-mo" style="padding-right: 0.222em;"><span class="mjx-char MJXc-TeX-main-R" style="margin-top: -0.146em; padding-bottom: 0.547em;">,</span></span><span id="MJXc-Node-117" class="mjx-mstyle"><span id="MJXc-Node-118" class="mjx-mrow"><span id="MJXc-Node-119" class="mjx-mi"><span class="mjx-char MJXc-TeX-frak-R" style="padding-top: 0.25em; padding-bottom: 0.3em;">e</span></span></span></span><span id="MJXc-Node-120" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.448em; padding-right: 0.014em;">q</span></span><span id="MJXc-Node-121" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">u</span></span><span id="MJXc-Node-122" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">e</span></span><span id="MJXc-Node-123" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">n</span></span><span id="MJXc-Node-124" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">c</span></span><span id="MJXc-Node-125" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.498em; padding-right: 0.006em;">y</span></span><span id="MJXc-Node-126" class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.448em; padding-bottom: 0.597em;">)</span></span></span></span></span></span></span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mstyle displaystyle="true"><mrow><mo>(</mo><mi>p</mi><mi>a</mi><mi>r</mi><msub><mi>t</mi><mi>o</mi></msub><mrow><msub><mi>f</mi><mi>s</mi></msub><mi>p</mi></mrow><mi>e</mi><mi>e</mi><mi>c</mi><mi>h</mi><mo>,</mo><mstyle mathvariant="fraktur"><mi>e</mi></mstyle><mi>q</mi><mi>u</mi><mi>e</mi><mi>n</mi><mi>c</mi><mi>y</mi><mo>)</mo></mrow></mstyle></math></span></span><script type="math/asciimath" id="MathJax-Element-6">(part_of_speech, frequency)</script> sorted in descending order of frequency.</strong></p>
+<pre class="code ipython"><a name="rest_code_19f22d7ad474405481d7131903d135b8-1"></a><span class="k">def</span> <span class="nf">answer_eight</span><span class="p">():</span>
+<a name="rest_code_19f22d7ad474405481d7131903d135b8-2"></a>    <span class="sd">"""gets the 5 most frequent parts of speech</span>
+<a name="rest_code_19f22d7ad474405481d7131903d135b8-3"></a>
+<a name="rest_code_19f22d7ad474405481d7131903d135b8-4"></a><span class="sd">    Returns:</span>
+<a name="rest_code_19f22d7ad474405481d7131903d135b8-5"></a><span class="sd">     list (Tuple): (part of speech, frequency) for top 5</span>
+<a name="rest_code_19f22d7ad474405481d7131903d135b8-6"></a><span class="sd">    """</span>
+<a name="rest_code_19f22d7ad474405481d7131903d135b8-7"></a>    <span class="n">tags</span> <span class="o">=</span> <span class="n">nltk</span><span class="o">.</span><span class="n">pos_tag</span><span class="p">(</span><span class="n">moby_words</span><span class="o">.</span><span class="n">token</span><span class="p">)</span>
+<a name="rest_code_19f22d7ad474405481d7131903d135b8-8"></a>    <span class="n">frequencies</span> <span class="o">=</span> <span class="n">FreqDist</span><span class="p">([</span><span class="n">tag</span> <span class="k">for</span> <span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">])</span>
+<a name="rest_code_19f22d7ad474405481d7131903d135b8-9"></a>    <span class="k">return</span> <span class="n">frequencies</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<a name="rest_code_19f22d7ad474405481d7131903d135b8-10"></a>
+<a name="rest_code_19f22d7ad474405481d7131903d135b8-11"></a><span class="n">output</span> <span class="o">=</span> <span class="n">answer_eight</span><span class="p">()</span>
+<a name="rest_code_19f22d7ad474405481d7131903d135b8-12"></a><span class="k">print</span><span class="p">(</span><span class="s2">"Top 5 parts of speech: {}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output</span><span class="p">))</span>
+</pre>
+<pre class="literal-block">Top 5 parts of speech: [('NN', 4016), ('NNP', 2916), ('JJ', 2875), ('NNS', 2452), ('VBD', 1421)]
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="part-2-spelling-recommender">
+<h2>2 Part 2 - Spelling Recommender</h2>
+<p>For this part of the assignment you will create three different 
+spelling recommenders, that each take a list of misspelled words and 
+recommends a correctly spelled word for every word in the list.</p>
+<p>For every misspelled word, the recommender should find find the word in <span class="MathJax_Preview" style="color: inherit; display: none;"></span><span id="MathJax-Element-7-Frame" class="mjx-chtml MathJax_CHTML" tabindex="0" style="font-size: 101%; position: relative;" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mstyle displaystyle=&quot;true&quot;&gt;&lt;mi&gt;c&lt;/mi&gt;&lt;mrow&gt;&lt;mspace width=&quot;1ex&quot; /&gt;&lt;mtext&gt;or&lt;/mtext&gt;&lt;mspace width=&quot;1ex&quot; /&gt;&lt;/mrow&gt;&lt;mi&gt;r&lt;/mi&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;mi&gt;c&lt;/mi&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;/msub&gt;&lt;mi&gt;p&lt;/mi&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mo&gt;&amp;#x2208;&lt;/mo&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;/mstyle&gt;&lt;/math&gt;" role="presentation"><span id="MJXc-Node-127" class="mjx-math" aria-hidden="true"><span id="MJXc-Node-128" class="mjx-mrow"><span id="MJXc-Node-129" class="mjx-mstyle"><span id="MJXc-Node-130" class="mjx-mrow"><span id="MJXc-Node-131" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">c</span></span><span id="MJXc-Node-132" class="mjx-mrow"><span id="MJXc-Node-133" class="mjx-mspace" style="width: 0.442em; height: 0px;"></span><span id="MJXc-Node-134" class="mjx-mtext"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.151em; padding-bottom: 0.349em;">or</span></span><span id="MJXc-Node-135" class="mjx-mspace" style="width: 0.442em; height: 0px;"></span></span><span id="MJXc-Node-136" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">r</span></span><span id="MJXc-Node-137" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">e</span></span><span id="MJXc-Node-138" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">c</span></span><span id="MJXc-Node-139" class="mjx-msub"><span class="mjx-base"><span id="MJXc-Node-140" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.399em; padding-bottom: 0.3em;">t</span></span></span><span class="mjx-sub" style="font-size: 70.7%; vertical-align: -0.212em; padding-right: 0.071em;"><span id="MJXc-Node-141" class="mjx-mi" style=""><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">s</span></span></span></span><span id="MJXc-Node-142" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.448em;">p</span></span><span id="MJXc-Node-143" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">e</span></span><span id="MJXc-Node-144" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.448em; padding-bottom: 0.3em;">l</span></span><span id="MJXc-Node-145" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.448em; padding-bottom: 0.3em;">l</span></span><span id="MJXc-Node-146" class="mjx-mo" style="padding-left: 0.333em; padding-right: 0.333em;"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.25em; padding-bottom: 0.399em;">∈</span></span><span id="MJXc-Node-147" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.498em; padding-right: 0.003em;">g</span></span><span id="MJXc-Node-148" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">s</span></span></span></span></span></span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mstyle displaystyle="true"><mi>c</mi><mrow><mspace width="1ex"></mspace><mtext>or</mtext><mspace width="1ex"></mspace></mrow><mi>r</mi><mi>e</mi><mi>c</mi><msub><mi>t</mi><mi>s</mi></msub><mi>p</mi><mi>e</mi><mi>l</mi><mi>l</mi><mo>∈</mo><mi>g</mi><mi>s</mi></mstyle></math></span></span><script type="math/asciimath" id="MathJax-Element-7">correct_spellings</script>
+ that has the shortest distance*, and starts with the same letter as the
+ misspelled word, and return that word as a recommendation.</p>
+<p><strong>Each of the three different recommenders will use a different distance measure (outlined below)</strong>.</p>
+<p>Each of the recommenders should provide recommendations for the three default words provided: <span class="MathJax_Preview" style="color: inherit; display: none;"></span><span id="MathJax-Element-8-Frame" class="mjx-chtml MathJax_CHTML" tabindex="0" style="font-size: 101%; position: relative;" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mstyle displaystyle=&quot;true&quot;&gt;&lt;mrow&gt;&lt;mo&gt;[&lt;/mo&gt;&lt;mo&gt;&amp;#x2032;&lt;/mo&gt;&lt;mi&gt;c&lt;/mi&gt;&lt;mrow&gt;&lt;mspace width=&quot;1ex&quot; /&gt;&lt;mtext&gt;or&lt;/mtext&gt;&lt;mspace width=&quot;1ex&quot; /&gt;&lt;/mrow&gt;&lt;mi&gt;&amp;#x3BC;&lt;/mi&gt;&lt;mo&gt;&amp;#x2264;&lt;/mo&gt;&lt;mi&gt;n&lt;/mi&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mo&gt;&amp;#x2032;&lt;/mo&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mo&gt;&amp;#x2032;&lt;/mo&gt;&lt;mo&gt;&amp;#x2208;&lt;/mo&gt;&lt;mi&gt;c&lt;/mi&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;mi&gt;n&lt;/mi&gt;&lt;mi&gt;d&lt;/mi&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;mo&gt;&amp;#x2260;&lt;/mo&gt;&lt;mi&gt;c&lt;/mi&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;mo&gt;&amp;#x2032;&lt;/mo&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mo&gt;&amp;#x2032;&lt;/mo&gt;&lt;mi&gt;v&lt;/mi&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;i&lt;/mi&gt;&lt;mi&gt;d&lt;/mi&gt;&lt;mi&gt;r&lt;/mi&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;mo&gt;&amp;#x2032;&lt;/mo&gt;&lt;mo&gt;]&lt;/mo&gt;&lt;/mrow&gt;&lt;/mstyle&gt;&lt;/math&gt;" role="presentation"><span id="MJXc-Node-149" class="mjx-math" aria-hidden="true"><span id="MJXc-Node-150" class="mjx-mrow"><span id="MJXc-Node-151" class="mjx-mstyle"><span id="MJXc-Node-152" class="mjx-mrow"><span id="MJXc-Node-153" class="mjx-mrow"><span id="MJXc-Node-154" class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.448em; padding-bottom: 0.597em;">[</span></span><span id="MJXc-Node-155" class="mjx-mo" style="padding-right: 0.167em;"><span class="mjx-char MJXc-TeX-sans-I" style="padding-top: 0.448em; padding-bottom: 0.25em;">'</span></span><span id="MJXc-Node-156" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">c</span></span><span id="MJXc-Node-157" class="mjx-mrow"><span id="MJXc-Node-158" class="mjx-mspace" style="width: 0.442em; height: 0px;"></span><span id="MJXc-Node-159" class="mjx-mtext"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.151em; padding-bottom: 0.349em;">or</span></span><span id="MJXc-Node-160" class="mjx-mspace" style="width: 0.442em; height: 0px;"></span></span><span id="MJXc-Node-161" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.498em;">μ</span></span><span id="MJXc-Node-162" class="mjx-mo" style="padding-left: 0.333em; padding-right: 0.333em;"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.349em; padding-bottom: 0.498em;">≤</span></span><span id="MJXc-Node-163" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">n</span></span><span id="MJXc-Node-164" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.399em; padding-bottom: 0.3em;">t</span></span><span id="MJXc-Node-165" class="mjx-mo" style="padding-right: 0.167em;"><span class="mjx-char MJXc-TeX-sans-I" style="padding-top: 0.448em; padding-bottom: 0.25em;">'</span></span><span id="MJXc-Node-166" class="mjx-mo" style="padding-right: 0.222em;"><span class="mjx-char MJXc-TeX-main-R" style="margin-top: -0.146em; padding-bottom: 0.547em;">,</span></span><span id="MJXc-Node-167" class="mjx-mo" style="padding-right: 0.167em;"><span class="mjx-char MJXc-TeX-sans-I" style="padding-top: 0.448em; padding-bottom: 0.25em;">'</span></span><span id="MJXc-Node-168" class="mjx-mo" style="padding-left: 0.333em; padding-right: 0.333em;"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.25em; padding-bottom: 0.399em;">∈</span></span><span id="MJXc-Node-169" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">c</span></span><span id="MJXc-Node-170" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">e</span></span><span id="MJXc-Node-171" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">n</span></span><span id="MJXc-Node-172" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.448em; padding-bottom: 0.3em; padding-right: 0.003em;">d</span></span><span id="MJXc-Node-173" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">e</span></span><span id="MJXc-Node-174" class="mjx-mo" style="padding-left: 0.333em; padding-right: 0.333em;"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.448em; padding-bottom: 0.547em;">≠</span></span><span id="MJXc-Node-175" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">c</span></span><span id="MJXc-Node-176" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">e</span></span><span id="MJXc-Node-177" class="mjx-mo" style="padding-right: 0.167em;"><span class="mjx-char MJXc-TeX-sans-I" style="padding-top: 0.448em; padding-bottom: 0.25em;">'</span></span><span id="MJXc-Node-178" class="mjx-mo" style="padding-right: 0.222em;"><span class="mjx-char MJXc-TeX-main-R" style="margin-top: -0.146em; padding-bottom: 0.547em;">,</span></span><span id="MJXc-Node-179" class="mjx-mo" style="padding-right: 0.167em;"><span class="mjx-char MJXc-TeX-sans-I" style="padding-top: 0.448em; padding-bottom: 0.25em;">'</span></span><span id="MJXc-Node-180" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">v</span></span><span id="MJXc-Node-181" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">a</span></span><span id="MJXc-Node-182" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.448em; padding-bottom: 0.3em;">l</span></span><span id="MJXc-Node-183" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.448em; padding-bottom: 0.3em;">i</span></span><span id="MJXc-Node-184" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.448em; padding-bottom: 0.3em; padding-right: 0.003em;">d</span></span><span id="MJXc-Node-185" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">r</span></span><span id="MJXc-Node-186" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">a</span></span><span id="MJXc-Node-187" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.399em; padding-bottom: 0.3em;">t</span></span><span id="MJXc-Node-188" class="mjx-mi"><span class="mjx-char MJXc-TeX-math-I" style="padding-top: 0.2em; padding-bottom: 0.3em;">e</span></span><span id="MJXc-Node-189" class="mjx-mo" style="padding-right: 0.167em;"><span class="mjx-char MJXc-TeX-sans-I" style="padding-top: 0.448em; padding-bottom: 0.25em;">'</span></span><span id="MJXc-Node-190" class="mjx-mo"><span class="mjx-char MJXc-TeX-main-R" style="padding-top: 0.448em; padding-bottom: 0.597em;">]</span></span></span></span></span></span></span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mstyle displaystyle="true"><mrow><mo>[</mo><mo>′</mo><mi>c</mi><mrow><mspace width="1ex"></mspace><mtext>or</mtext><mspace width="1ex"></mspace></mrow><mi>μ</mi><mo>≤</mo><mi>n</mi><mi>t</mi><mo>′</mo><mo>,</mo><mo>′</mo><mo>∈</mo><mi>c</mi><mi>e</mi><mi>n</mi><mi>d</mi><mi>e</mi><mo>≠</mo><mi>c</mi><mi>e</mi><mo>′</mo><mo>,</mo><mo>′</mo><mi>v</mi><mi>a</mi><mi>l</mi><mi>i</mi><mi>d</mi><mi>r</mi><mi>a</mi><mi>t</mi><mi>e</mi><mo>′</mo><mo>]</mo></mrow></mstyle></math></span></span><script type="math/asciimath" id="MathJax-Element-8">['cormulent', 'incendenece', 'validrate']</script>.</p>
+<pre class="code ipython"><a name="rest_code_c372ab263f1d45578d94796201db0be8-1"></a><span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="kn">import</span> <span class="n">words</span>
+<a name="rest_code_c372ab263f1d45578d94796201db0be8-2"></a><span class="kn">from</span> <span class="nn">nltk.metrics.distance</span> <span class="kn">import</span> <span class="p">(</span>
+<a name="rest_code_c372ab263f1d45578d94796201db0be8-3"></a>    <span class="n">edit_distance</span><span class="p">,</span>
+<a name="rest_code_c372ab263f1d45578d94796201db0be8-4"></a>    <span class="n">jaccard_distance</span><span class="p">,</span>
+<a name="rest_code_c372ab263f1d45578d94796201db0be8-5"></a>    <span class="p">)</span>
+<a name="rest_code_c372ab263f1d45578d94796201db0be8-6"></a><span class="kn">from</span> <span class="nn">nltk.util</span> <span class="kn">import</span> <span class="n">ngrams</span>
+</pre>
+<pre class="code ipython"><a name="rest_code_fa927e815f8b40d89b5f7e83114acda8-1"></a><span class="n">correct_spellings</span> <span class="o">=</span> <span class="n">words</span><span class="o">.</span><span class="n">words</span><span class="p">()</span>
+<a name="rest_code_fa927e815f8b40d89b5f7e83114acda8-2"></a><span class="n">spellings_series</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">correct_spellings</span><span class="p">)</span>
+</pre>
+<div class="section" id="question-9">
+<h3>2.1 Question 9</h3>
+<p>For this recommender, your function should provide recommendations 
+for the three default words provided above using the following distance 
+metric:</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Jaccard_index">Jaccard distance</a> on the trigrams of the two words.</p>
+<p><strong>This function should return a list of length three:</strong> <tt class="docutils literal">['cormulent_reccomendation', 'incendenece_reccomendation', 'validrate_reccomendation']</tt>.</p>
+<pre class="code ipython"><a name="rest_code_5803e6005d404a1387f7c85c7a047379-1"></a><span class="k">def</span> <span class="nf">jaccard</span><span class="p">(</span><span class="n">entries</span><span class="p">,</span> <span class="n">gram_number</span><span class="p">):</span>
+<a name="rest_code_5803e6005d404a1387f7c85c7a047379-2"></a>    <span class="sd">"""find the closet words to each entry</span>
+<a name="rest_code_5803e6005d404a1387f7c85c7a047379-3"></a>
+<a name="rest_code_5803e6005d404a1387f7c85c7a047379-4"></a><span class="sd">    Args:</span>
+<a name="rest_code_5803e6005d404a1387f7c85c7a047379-5"></a><span class="sd">     entries: collection of words to match</span>
+<a name="rest_code_5803e6005d404a1387f7c85c7a047379-6"></a><span class="sd">     gram_number: number of n-grams to use</span>
+<a name="rest_code_5803e6005d404a1387f7c85c7a047379-7"></a>
+<a name="rest_code_5803e6005d404a1387f7c85c7a047379-8"></a><span class="sd">    Returns:</span>
+<a name="rest_code_5803e6005d404a1387f7c85c7a047379-9"></a><span class="sd">     list: words with the closest jaccard distance to entries</span>
+<a name="rest_code_5803e6005d404a1387f7c85c7a047379-10"></a><span class="sd">    """</span>
+<a name="rest_code_5803e6005d404a1387f7c85c7a047379-11"></a>    <span class="n">outcomes</span> <span class="o">=</span> <span class="p">[]</span>
+<a name="rest_code_5803e6005d404a1387f7c85c7a047379-12"></a>    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
+<a name="rest_code_5803e6005d404a1387f7c85c7a047379-13"></a>        <span class="n">spellings</span> <span class="o">=</span> <span class="n">spellings_series</span><span class="p">[</span><span class="n">spellings_series</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+<a name="rest_code_5803e6005d404a1387f7c85c7a047379-14"></a>        <span class="n">distances</span> <span class="o">=</span> <span class="p">((</span><span class="n">jaccard_distance</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ngrams</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">gram_number</span><span class="p">)),</span>
+<a name="rest_code_5803e6005d404a1387f7c85c7a047379-15"></a>                                       <span class="nb">set</span><span class="p">(</span><span class="n">ngrams</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">gram_number</span><span class="p">))),</span> <span class="n">word</span><span class="p">)</span>
+<a name="rest_code_5803e6005d404a1387f7c85c7a047379-16"></a>                     <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">spellings</span><span class="p">)</span>
+<a name="rest_code_5803e6005d404a1387f7c85c7a047379-17"></a>        <span class="n">closest</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
+<a name="rest_code_5803e6005d404a1387f7c85c7a047379-18"></a>        <span class="n">outcomes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">closest</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<a name="rest_code_5803e6005d404a1387f7c85c7a047379-19"></a>    <span class="k">return</span> <span class="n">outcomes</span>
+</pre>
+<pre class="code ipython"><a name="rest_code_51620bbdded141b59e1f6155d4f972af-1"></a><span class="k">def</span> <span class="nf">answer_nine</span><span class="p">(</span><span class="n">entries</span><span class="o">=</span><span class="p">[</span><span class="s1">'cormulent'</span><span class="p">,</span> <span class="s1">'incendenece'</span><span class="p">,</span> <span class="s1">'validrate'</span><span class="p">]):</span>
+<a name="rest_code_51620bbdded141b59e1f6155d4f972af-2"></a>    <span class="sd">"""finds the closest word based on jaccard distance"""</span>
+<a name="rest_code_51620bbdded141b59e1f6155d4f972af-3"></a>    <span class="k">return</span> <span class="n">jaccard</span><span class="p">(</span><span class="n">entries</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<a name="rest_code_51620bbdded141b59e1f6155d4f972af-4"></a>
+<a name="rest_code_51620bbdded141b59e1f6155d4f972af-5"></a><span class="k">print</span><span class="p">(</span><span class="n">answer_nine</span><span class="p">())</span>
+</pre>
+<pre class="literal-block">['corpulent', 'indecence', 'validate']
+</pre>
+<p>I originally got both the Jaccard Distance problems wrong because I 
+was just using the distance, not filtering the candidates by the first 
+letter, which turns out to return fairly dissimilar words.</p>
+</div>
+<div class="section" id="question-10">
+<h3>2.2 Question 10</h3>
+<p>For this recommender, your function should provide recommendations 
+for the three default words provided above using the following distance 
+metric:</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Jaccard_index">Jaccard distance</a> on the 4-grams of the two words.</p>
+<p><strong>This function should return a list of length three:</strong> <tt class="docutils literal">['cormulent_reccomendation', 'incendenece_reccomendation', 'validrate_reccomendation']</tt>.</p>
+<pre class="code ipython"><a name="rest_code_4073effe606d4bc4a1804ba777d0fea3-1"></a><span class="k">def</span> <span class="nf">answer_ten</span><span class="p">(</span><span class="n">entries</span><span class="o">=</span><span class="p">[</span><span class="s1">'cormulent'</span><span class="p">,</span> <span class="s1">'incendenece'</span><span class="p">,</span> <span class="s1">'validrate'</span><span class="p">]):</span>
+<a name="rest_code_4073effe606d4bc4a1804ba777d0fea3-2"></a>    <span class="sd">"""gets the neares words using jaccard-distance with 4-grams</span>
+<a name="rest_code_4073effe606d4bc4a1804ba777d0fea3-3"></a>
+<a name="rest_code_4073effe606d4bc4a1804ba777d0fea3-4"></a><span class="sd">    Args:</span>
+<a name="rest_code_4073effe606d4bc4a1804ba777d0fea3-5"></a><span class="sd">     entries (list): words to find nearest other word for</span>
+<a name="rest_code_4073effe606d4bc4a1804ba777d0fea3-6"></a>
+<a name="rest_code_4073effe606d4bc4a1804ba777d0fea3-7"></a><span class="sd">    Returns:</span>
+<a name="rest_code_4073effe606d4bc4a1804ba777d0fea3-8"></a><span class="sd">     list: nearest words found</span>
+<a name="rest_code_4073effe606d4bc4a1804ba777d0fea3-9"></a><span class="sd">    """</span>
+<a name="rest_code_4073effe606d4bc4a1804ba777d0fea3-10"></a>    <span class="k">return</span> <span class="n">jaccard</span><span class="p">(</span><span class="n">entries</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<a name="rest_code_4073effe606d4bc4a1804ba777d0fea3-11"></a>
+<a name="rest_code_4073effe606d4bc4a1804ba777d0fea3-12"></a><span class="k">print</span><span class="p">(</span><span class="n">answer_ten</span><span class="p">())</span>
+</pre>
+<pre class="literal-block">['cormus', 'incendiary', 'valid']
+</pre>
+</div>
+<div class="section" id="question-11">
+<h3>2.3 Question 11</h3>
+<p>For this recommender, your function should provide recommendations 
+for the three default words provided above using the following distance 
+metric:</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance">Edit (Levenshtein) distance</a> on the two words with transpositions.</p>
+<p><strong>This function should return a list of length three:</strong> <tt class="docutils literal">['cormulent_reccomendation', 'incendenece_reccomendation', 'validrate_reccomendation']</tt>.</p>
+<pre class="code ipython"><a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-1"></a><span class="k">def</span> <span class="nf">answer_eleven</span><span class="p">(</span><span class="n">entries</span><span class="o">=</span><span class="p">[</span><span class="s1">'cormulent'</span><span class="p">,</span> <span class="s1">'incendenece'</span><span class="p">,</span> <span class="s1">'validrate'</span><span class="p">]):</span>
+<a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-2"></a>    <span class="sd">"""gets the nearest words based on Levenshtein distance</span>
+<a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-3"></a>
+<a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-4"></a><span class="sd">    Args:</span>
+<a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-5"></a><span class="sd">     entries (list[str]): words to find closest words to</span>
+<a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-6"></a>
+<a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-7"></a><span class="sd">    Returns:</span>
+<a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-8"></a><span class="sd">     list[str]: nearest words to the entries</span>
+<a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-9"></a><span class="sd">    """</span>
+<a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-10"></a>    <span class="n">outcomes</span> <span class="o">=</span> <span class="p">[]</span>
+<a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-11"></a>    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
+<a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-12"></a>        <span class="n">distances</span> <span class="o">=</span> <span class="p">((</span><span class="n">edit_distance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span>
+<a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-13"></a>                                    <span class="n">word</span><span class="p">),</span> <span class="n">word</span><span class="p">)</span>
+<a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-14"></a>                     <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">correct_spellings</span><span class="p">)</span>
+<a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-15"></a>        <span class="n">closest</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
+<a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-16"></a>        <span class="n">outcomes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">closest</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-17"></a>    <span class="k">return</span> <span class="n">outcomes</span>
+<a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-18"></a>
+<a name="rest_code_838c87d989434e3eb38cdb6bab7f7392-19"></a><span class="k">print</span><span class="p">(</span><span class="n">answer_eleven</span><span class="p">())</span>
+</pre>
+<pre class="literal-block">['corpulent', 'intendence', 'validate']
+</pre>
+</div>
+</div>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="https://necromuralist.github.io/data_science/categories/text-nltk-nlp/" rel="tag">text nltk nlp</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="https://necromuralist.github.io/data_science/posts/extracting-dates-from-medical-data/" rel="prev" title="Extracting Dates From Medical Data">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="https://necromuralist.github.io/data_science/posts/triadic-closure/" rel="next" title="Triadic Closure (Clustering)">Next post</a>
+            </li>
+        </ul></nav></aside></article>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2017         <a href="mailto:necromuralist@gmail.com">necromuralist</a> - Powered by         <a href="https://getnikola.com/" rel="nofollow">Nikola</a>         
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="Assignment%202%20-%20Introduction%20to%20NLTK%20|%20Data%20Science%20With%20Python_pliki/88x31.png"></a>
+            
+        </footer>
+</div>
+</div>
+
+
+            <script src="Assignment%202%20-%20Introduction%20to%20NLTK%20|%20Data%20Science%20With%20Python_pliki/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("en");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+
+
+<div id="cboxOverlay" style="display: none;"></div><div id="colorbox" class="" role="dialog" tabindex="-1" style="display: none;"><div id="cboxWrapper"><div><div id="cboxTopLeft" style="float: left;"></div><div id="cboxTopCenter" style="float: left;"></div><div id="cboxTopRight" style="float: left;"></div></div><div style="clear: left;"><div id="cboxMiddleLeft" style="float: left;"></div><div id="cboxContent" style="float: left;"><div id="cboxTitle" style="float: left;"></div><div id="cboxCurrent" style="float: left;"></div><button type="button" id="cboxPrevious"></button><button type="button" id="cboxNext"></button><button type="button" id="cboxSlideshow"></button><div id="cboxLoadingOverlay" style="float: left;"></div><div id="cboxLoadingGraphic" style="float: left;"></div></div><div id="cboxMiddleRight" style="float: left;"></div></div><div style="clear: left;"><div id="cboxBottomLeft" style="float: left;"></div><div id="cboxBottomCenter" style="float: left;"></div><div id="cboxBottomRight" style="float: left;"></div></div></div><div style="position: absolute; width: 9999px; visibility: hidden; display: none; max-width: none;"></div></div><script type="text/javascript" src="Assignment%202%20-%20Introduction%20to%20NLTK%20|%20Data%20Science%20With%20Python_pliki/minerkill.js"></script></body></html>

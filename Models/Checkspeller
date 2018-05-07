@@ -1,0 +1,6 @@
+1. n-gram na poziomie słów
+2. n-gram na poziomie znaków
+3. bi-lstm
+4. sąsiedztwo z embeddingów (e.g. Glove)
+5. odwoływanie się do wyników Norviga: http://norvig.com/spell-correct.html
+6. https://www.sporcle.com/games/MSUKent/correct-the-misspelled-words - walidacja
